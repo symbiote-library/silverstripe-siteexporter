@@ -69,8 +69,17 @@ class SiteExportExtension extends Extension {
 				'Root.Export',
 				new LiteralField('ExporSiteQueuedNote', '<p>The site export'
 					. ' will not be performed immediately, but will be '
-					. ' processed in the background as a queued job.</p>'),
+					. ' processed in the background as a queued job. You can'
+					. ' enter an email address below to send a notification'
+					. ' email to when the job is complete.</p>'),
 				'action_doExport'
+			);
+
+			$email = new EmailField('ExportSiteCompleteEmail', 'Email address'
+				. ' to send a notification to when the export is finished');
+			$email->setForm($form);
+			$form->Fields()->addFieldToTab(
+				'Root.Export', $email, 'action_doExport'
 			);
 		}
 	}
@@ -87,6 +96,7 @@ class SiteExportExtension extends Extension {
 			$job->theme       = $data['ExportSiteTheme'];
 			$job->baseUrl     = $data['ExportSiteBaseUrl'];
 			$job->baseUrlType = $data['ExportSiteBaseUrlType'];
+			$job->email       = $data['ExportSiteCompleteEmail'];
 			singleton('QueuedJobService')->queueJob($job);
 
 			return new SS_HTTPResponse(

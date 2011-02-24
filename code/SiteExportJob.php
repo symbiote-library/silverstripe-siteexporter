@@ -95,6 +95,20 @@ class SiteExportJob extends AbstractQueuedJob {
 		$export->BaseUrl     = $this->baseUrl;
 		$export->ArchiveID   = $file->ID;
 		$export->write();
+
+		if ($this->email) {
+			$email = new Email();
+			$email->setTo($this->email);
+			$email->setTemplate('SiteExportCompleteEmail');
+			$email->setSubject(sprintf(
+				'Site Export For "%s" Complete', $siteTitle
+			));
+			$email->populateTemplate(array(
+				'SiteTitle' => $siteTitle,
+				'Link'      => $file->getAbsoluteURL()
+			));
+			$email->send();
+		}
 	}
 
 }
