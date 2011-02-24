@@ -3,7 +3,7 @@
 		$("#ExportSiteBaseUrl").toggle($(this).val() == "fixed");
 	});
 
-	$("#action_doExport").live("click", function() {
+	$("button#action_doExport").live("click", function() {
 		var $button = $(this).addClass("loading");
 		var $form   = $(this).parents("form");
 		var $table  = $form.find("#Form_EditForm_SiteExports");
