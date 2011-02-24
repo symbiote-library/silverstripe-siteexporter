@@ -71,12 +71,11 @@ class SiteExportExtension extends Extension {
 					. ' will not be performed immediately, but will be '
 					. ' processed in the background as a queued job. You can'
 					. ' enter an email address below to send a notification'
-					. ' email to when the job is complete.</p>'),
+					. ' email to when the job is complete:</p>'),
 				'action_doExport'
 			);
 
-			$email = new EmailField('ExportSiteCompleteEmail', 'Email address'
-				. ' to send a notification to when the export is finished');
+			$email = new EmailField('ExportSiteCompleteEmail', 'Notification email address');
 			$email->setForm($form);
 			$form->Fields()->addFieldToTab(
 				'Root.Export', $email, 'action_doExport'
