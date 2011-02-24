@@ -28,13 +28,6 @@ class SiteExporter extends FilesystemPublisher {
 		$links     = $this->urlsToPaths($this->getLinks());
 		$files     = array();
 
-		// Convert the links into a regex to match relative links.
-		$regexLinks = '(';
-		foreach (array_keys($links) as $link) {
-			$regexLinks .= trim($link, '/') . '|';
-		}
-		$regexLinks = substr($regexLinks, 0, -1) . ')';
-
 		increase_time_limit_to();
 		increase_memory_limit_to();
 
@@ -90,9 +83,10 @@ class SiteExporter extends FilesystemPublisher {
 				}
 			}
 
-			// Append any anchor links which point to a link in the links array
-			// with a .html extension, and replace absolute requirements links.
-			$content = preg_replace("~(href=\"/?$regexLinks)/?\"~i", '$1.html"', $content);
+			// Append any anchor links which point to a relative site link
+			// with a .html extension.
+			$base    = preg_quote(Director::baseURL());
+			$content = preg_replace('~<a(.+?)href="(' . $base . '[^"]*?)/?"~i', '<a$1href="$2.html"', $content);
 			$content = str_replace('/.html', '/index.html', $content);
 
 			// If we want to rewrite links to relative, then determine how many
