@@ -37,7 +37,7 @@ class SiteExportExtension extends Extension {
 			new TextField(
 				'ExportSiteBaseUrl',
 				'Base URL',
-				'http://'),
+				Director::absoluteBaseURL()),
 			new DropdownField(
 				'ExportSiteTheme',
 				'Theme',
