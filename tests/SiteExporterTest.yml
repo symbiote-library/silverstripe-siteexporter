@@ -1,0 +1,16 @@
+SiteTree:
+  home:
+    Title: Home
+  about:
+    Title: About Us
+    URLSegment: about
+  staff:
+    Title: Our Staff
+    URLSegment: staff
+    Parent: =>SiteTree.about
+  history:
+    Title: History
+    Parent: =>SiteTree.about
+  contact:
+    Title: Contact Us
+    URLSegment: contact
