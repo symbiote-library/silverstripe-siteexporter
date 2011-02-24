@@ -108,6 +108,8 @@ class SiteExportExtension extends Extension {
 		$export->BaseUrl     = $data['ExportSiteBaseUrl'];
 		$export->ArchiveID   = $file->ID;
 		$export->write();
+
+		return $form->dataFieldByName('SiteExports')->FieldHolder();
 	}
 
 }
