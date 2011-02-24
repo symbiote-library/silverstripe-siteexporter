@@ -6,6 +6,8 @@
  */
 class SiteExportExtension extends Extension {
 
+	const EXPORTS_DIR = 'SiteExports';
+
 	public static $allowed_actions = array(
 		'doExport'
 	);
@@ -21,6 +23,16 @@ class SiteExportExtension extends Extension {
 		$action = new FormAction('doExport');
 		$action->useButtonTag = true;
 		$action->setButtonContent('Export');
+
+		$exports = new TableListField('SiteExports', 'SiteExport', null, sprintf(
+			'"ParentClass" = \'%s\' AND "ParentID" =  %d',
+			ClassInfo::baseDataClass($form->getRecord()->class),
+			$form->getRecord()->ID
+		));
+		$exports->setFieldFormatting(array(
+			'Archive.Name' => '<a href=\"{$Archive()->Link()}\">{$Archive()->Name}</a>'
+		));
+		$exports->setForm($form);
 
 		$fields = array(
 			new HeaderField(
@@ -44,18 +56,23 @@ class SiteExportExtension extends Extension {
 				SiteConfig::current_site_config()->getAvailableThemes(),
 				null, null,
 				'(Use default theme)'),
-			$action
+			$action,
+			new HeaderField(
+				'SiteExportsHeader',
+				'Site Exports'),
+			$exports
 		);
 		$form->Fields()->addFieldsToTab('Root.Export', $fields);
 	}
 
 	public function doExport($data, $form) {
-		$data  = $form->getData();
-		$links = array();
+		$data      = $form->getData();
+		$links     = array();
+		$siteTitle = SiteConfig::current_site_config()->Title;
 
 		// First generate a temp directory to store the export content in.
 		$temp  = TEMP_FOLDER;
-		$temp .= sprintf('/siteexport_%s', date('Y-m-d_H-i-s'));
+		$temp .= sprintf('/siteexport_%s', date('Y-m-d-His'));
 		mkdir($temp);
 
 		$exporter = new SiteExporter();
@@ -65,17 +82,32 @@ class SiteExportExtension extends Extension {
 		$exporter->makeRelative = $data['ExportSiteBaseUrlType'] == 'rewrite';
 		$exporter->exportTo($temp);
 
-		// Then place the exported content into an archive.
-		SiteExportUtils::zip_directory($temp, $zip = "$temp.zip");
-
-		$filename = preg_replace('/[^a-zA-Z0-9-.]/', '-', sprintf(
-			'%s-%s.zip', SiteConfig::current_site_config()->Title, date('Y-m-d H:i:s')
+		// Then place the exported content into an archive, stored in the assets
+		// root, and create a site export for it.
+		$filename = preg_replace('/[^a-zA-Z0-9-.+]/', '-', sprintf(
+			'%s-%s.zip', $siteTitle, date('c')
 		));
 
-		return SS_HTTPRequest::send_file(
-			file_get_contents($zip),
-			$filename,
-			'application/zip');
+		$dir      = Folder::findOrMake(self::EXPORTS_DIR);
+		$dirname  = ASSETS_PATH . '/' . self::EXPORTS_DIR;
+		$pathname = "$dirname/$filename";
+
+		SiteExportUtils::zip_directory($temp, "$dirname/$filename");
+
+		$file = new File();
+		$file->ParentID = $dir->ID;
+		$file->Title    = $siteTitle . ' ' . date('c');
+		$file->Filename = $dir->Filename . $filename;
+		$file->write();
+
+		$export = new SiteExport();
+		$export->ParentClass = $form->getRecord()->class;
+		$export->ParentID    = $form->getRecord()->ID;
+		$export->Theme       = SSViewer::current_theme();
+		$export->BaseUrlType = ucfirst($data['ExportSiteBaseUrlType']);
+		$export->BaseUrl     = $data['ExportSiteBaseUrl'];
+		$export->ArchiveID   = $file->ID;
+		$export->write();
 	}
 
 }
