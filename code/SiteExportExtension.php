@@ -127,6 +127,7 @@ class SiteExportExtension extends Extension {
 		$pathname = "$dirname/$filename";
 
 		SiteExportUtils::zip_directory($temp, "$dirname/$filename");
+		Filesystem::removeFolder($temp);
 
 		$file = new File();
 		$file->ParentID = $dir->ID;

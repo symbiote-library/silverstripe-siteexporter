@@ -80,6 +80,7 @@ class SiteExportJob extends AbstractQueuedJob {
 		$pathname = "$dirname/$filename";
 
 		SiteExportUtils::zip_directory($this->tempDir, "$dirname/$filename");
+		Filesystem::removeFolder($this->tempDir);
 
 		$file = new File();
 		$file->ParentID = $dir->ID;
