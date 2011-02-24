@@ -12,6 +12,7 @@
 class SiteExporter extends FilesystemPublisher {
 
 	public $root;
+	public $customLinks;
 	public $theme;
 	public $baseUrl;
 	public $makeRelative;
@@ -150,7 +151,7 @@ class SiteExporter extends FilesystemPublisher {
 			if ($mode == 'create') {
 				file_put_contents($to, $content);
 			} else {
-				copy($content, $to);
+				if (!file_exists($to)) copy($content, $to);
 			}
 		}
 
@@ -163,6 +164,10 @@ class SiteExporter extends FilesystemPublisher {
 	 * @return array
 	 */
 	public function getLinks() {
+		if ($this->customLinks) {
+			return $this->customLinks;
+		}
+
 		if ($this->root instanceof SiteTree) {
 			$links = array();
 			$stack = array($this->root);

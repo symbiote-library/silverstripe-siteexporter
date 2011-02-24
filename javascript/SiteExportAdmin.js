@@ -19,13 +19,15 @@
 			success: function(data) {
 				$table.replaceWith(data);
 				Behaviour.apply("Form_EditForm_SiteExports", true);
-
-				statusMessage("The site has been exported", "good");
 			},
 			error: function() {
 				statusMessage("Could not export site.", "bad");
 			},
-			complete: function() {
+			complete: function(xhr, status) {
+				if (status == 'success') {
+					statusMessage(xhr.statusText, "good");
+				}
+
 				$button.removeClass("loading").text(origText);
 			}
 		});

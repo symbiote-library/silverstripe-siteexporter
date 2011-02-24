@@ -19,6 +19,8 @@ external assets.
 ## Requirements
 * The PHP Zip extension.
 * SilverStripe 2.4+
+* If you want to run the export in queued stages (useful for larger sites), the
+  queued jobs module is required.
 
 ## Project Links
 * [GitHub Project Page](https://github.com/ajshort/silverstripe-siteexporter)

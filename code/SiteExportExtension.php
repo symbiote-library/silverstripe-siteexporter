@@ -63,12 +63,37 @@ class SiteExportExtension extends Extension {
 			$exports
 		);
 		$form->Fields()->addFieldsToTab('Root.Export', $fields);
+
+		if (class_exists('QueuedJobService')) {
+			$form->Fields()->addFieldToTab(
+				'Root.Export',
+				new LiteralField('ExporSiteQueuedNote', '<p>The site export'
+					. ' will not be performed immediately, but will be '
+					. ' processed in the background as a queued job.</p>'),
+				'action_doExport'
+			);
+		}
 	}
 
 	public function doExport($data, $form) {
 		$data      = $form->getData();
 		$links     = array();
 		$siteTitle = SiteConfig::current_site_config()->Title;
+
+		// If the queued jobs module is installed, then queue up an export
+		// job rather than performing the export.
+		if (class_exists('QueuedJobService')) {
+			$job = new SiteExportJob($form->getRecord());
+			$job->theme       = $data['ExportSiteTheme'];
+			$job->baseUrl     = $data['ExportSiteBaseUrl'];
+			$job->baseUrlType = $data['ExportSiteBaseUrlType'];
+			singleton('QueuedJobService')->queueJob($job);
+
+			return new SS_HTTPResponse(
+				$form->dataFieldByName('SiteExports')->FieldHolder(),
+				200,
+				'The site export job has been queued.');
+		}
 
 		// First generate a temp directory to store the export content in.
 		$temp  = TEMP_FOLDER;
@@ -109,7 +134,10 @@ class SiteExportExtension extends Extension {
 		$export->ArchiveID   = $file->ID;
 		$export->write();
 
-		return $form->dataFieldByName('SiteExports')->FieldHolder();
+		return new SS_HTTPResponse(
+			$form->dataFieldByName('SiteExports')->FieldHolder(),
+			200,
+			'The site export has been generated.');
 	}
 
 }

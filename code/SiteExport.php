@@ -16,6 +16,8 @@ class SiteExport extends DataObject {
 		'Archive'  => 'File'
 	);
 
+	public static $default_sort = '"ID" DESC';
+
 	public static $summary_fields = array(
 		'Created'      => 'Created',
 		'Theme'        => 'Theme',
