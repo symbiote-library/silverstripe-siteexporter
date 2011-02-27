@@ -42,7 +42,10 @@ class SiteExport extends DataObject {
 	}
 
 	protected function onBeforeDelete() {
-		$this->Archive()->delete();
+		if ($this->ArchiveID && $archive = $this->Archive()) {
+			$archive->delete();
+		}
+
 		parent::onBeforeDelete();
 	}
 
