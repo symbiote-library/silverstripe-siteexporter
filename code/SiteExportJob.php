@@ -47,7 +47,7 @@ class SiteExportJob extends AbstractQueuedJob {
 
 		if ($page = DataObject::get_by_id('SiteTree', array_shift($remaining))) {
 			$exporter = new SiteExporter();
-			$exporter->customLinks  = array($page->Link());
+			$exporter->customLinks  = array($page->RelativeLink());
 			$exporter->root         = $this->getRoot();
 			$exporter->theme        = $this->theme;
 			$exporter->baseUrl      = $this->baseUrl;

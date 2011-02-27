@@ -94,7 +94,7 @@ class SiteExporter extends FilesystemPublisher {
 			// levels deep we are and rewrite the relevant attributes globally.
 			// Also, string the base tag.
 			if ($this->makeRelative) {
-				$content = preg_replace('~(src|href)="' . Director::absoluteBaseURL() . '~i', '$1="/', $content);
+				$content = preg_replace('~(src|href)="' . Director::protocolAndHost() . '~i', '$1="', $content);
 
 				if (($trimmed = trim($link, '/')) && strpos($trimmed, '/')) {
 					$prepend = str_repeat('../', substr_count($trimmed, '/'));
@@ -176,14 +176,14 @@ class SiteExporter extends FilesystemPublisher {
 				if ($children = $item->liveChildren(true)) {
 					foreach ($children as $child) {
 						$stack[] = $child;
-						$links[] = $child->Link();
+						$links[] = $child->RelativeLink();
 					}
 				}
 			}
 
 			return $links;
 		} else {
-			return DataObject::get('SiteTree')->map('ID', 'Link');
+			return DataObject::get('SiteTree')->map('ID', 'RelativeLink');
 		}
 	}
 
