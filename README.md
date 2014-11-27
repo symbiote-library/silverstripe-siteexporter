@@ -14,7 +14,7 @@ external assets.
   with children should have an "Export" tab.
 
 ## Maintainer Contacts
-* Andrew Short (<andrew@silverstripe.com.au>)
+* Marcus Nyeholt (<marcus@silverstripe.com.au>)
 
 ## Requirements
 * The PHP Zip extension.
