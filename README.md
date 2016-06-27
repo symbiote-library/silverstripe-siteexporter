@@ -1,3 +1,7 @@
+> ## **IMPORTANT**
+
+> This module is no longer maintained, however if you would like to step forward and do so, please let us know.
+
 # SilverStripe Site Exporter Module
 
 The Site Exporter module allows you to download a copy of your site as a zip
